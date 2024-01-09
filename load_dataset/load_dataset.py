@@ -1,7 +1,12 @@
+import sys
+
 import torchvision.transforms as transforms
 from torch.utils import data
 from torchvision.datasets import MNIST, CIFAR10, CIFAR100, ImageFolder
-from ..config import Config
+
+from config import Config
+
+sys.path.append('../')
 
 
 def fetch_dataloader(types, train=True):
