@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from irs_block import IRS_Block
+from .irs_block import IRS_Block
 from src.generate_noise import generate_noise
 
 sys.path.append('../')
