@@ -1,5 +1,10 @@
+import sys
+
 import torch
-from ..config import Config
+
+from config import Config
+
+sys.path.append('../')
 
 
 def generate_noise(weight, variation):

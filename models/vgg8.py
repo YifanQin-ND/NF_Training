@@ -1,9 +1,13 @@
+import sys
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .irs_block import IRS_Block
-from ..src.generate_noise import generate_noise
+from irs_block import IRS_Block
+from src.generate_noise import generate_noise
+
+sys.path.append('../')
 
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, padding: int = 1) -> nn.Conv2d:

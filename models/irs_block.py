@@ -1,8 +1,13 @@
+import sys
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from ..src.generate_noise import generate_noise
-from ..config import Config
+
+from config import Config
+from src.generate_noise import generate_noise
+
+sys.path.append('../')
 
 
 def inf_with_noise(data, weight, noise, bias):
