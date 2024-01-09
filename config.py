@@ -10,5 +10,5 @@ class Config:
     LR: float = 1e-3
     WEIGHT_BIT: int = 8
     DEVICE_BIT: int = 2
-    EPOCH: int = 2
-    MC_times: int = 2
+    EPOCH: int = 200
+    MC_times: int = 200
