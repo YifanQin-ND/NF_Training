@@ -1,5 +1,5 @@
 # Negative Feedback Training: A Novel Concept to Improve Robustness of NVCIM DNN Accelerators
-[[Arxiv](https://arxiv.org/abs/2305.14561)] [[Notre Dame SCL Lab](https://www3.nd.edu/~scl/)]
+[[Arxiv](https://arxiv.org/abs/2305.14561)] [[Notre Dame SCL Lab](https://www3.nd.edu/~scl/)] [![Author](https://img.shields.io/badge/Author-Yifan-red.svg "Author")](https://github.com/YifanQin-ND "Author") 
 
 
 # Overview
