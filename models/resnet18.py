@@ -226,9 +226,10 @@ class ResNet_test(nn.Module):
         self.fc1 = nn.Linear(in_features=512, out_features=num_classes)
 
     def epoch_noise(self):
-        for i in range(1, 9):
+        for i in range(1, 5):
             layer = getattr(self, f'layer{i}')
-            layer.epoch_noise()
+            for block in layer:
+                block.epoch_noise()
         self.conv1_noise = generate_noise(self.conv1.weight, self.noise_backbone)
         self.fc1_noise = generate_noise(self.fc1.weight, self.noise_backbone)
 
@@ -244,6 +245,7 @@ class ResNet_test(nn.Module):
         layers.append(block(self.noise_backbone, in_planes, out_planes, stride=stride))
         for _ in range(1, blocks):
             layers.append(block(self.noise_backbone, out_planes, out_planes, stride=1))
+
         return nn.Sequential(*layers)
 
     def forward(self, x):
