@@ -5,20 +5,9 @@
 # Overview
 Compute-in-memory (CIM) accelerators built upon non-volatile memory (NVM) devices excel in energy efficiency and latency when performing Deep Neural Network (DNN) inference, thanks to their in-situ data processing capability. However, the stochastic nature and intrinsic variations of NVM devices often result in performance degradation in DNN inference. Introducing these non-ideal device behaviors during DNN training enhances robustness (**noise-injection training**), but has drawbacks. Here, we draw inspiration from the control theory and propose a novel training concept: **Negative Feedback Training (NFT)** leveraging the multi-scale noisy information captured from network. We develop two specific NFT instances, Oriented Variational Forward (OVF) and Intermediate Representation Snapshot (IRS).
 
-<table>
-  <tr>
-    <td>
-      <p align="center">
-        <img src="https://github.com/YifanQin-ND/NF_Training/files/13882561/overview.pdf" alt="overview" width="80%" height="80%">
-      </p>
-    </td>
-    <td>
-      <p align="center">
-        <img src="https://github.com/YifanQin-ND/NF_Training/files/13882423/two_instances.pdf" alt="Two Instances" width="90%" height="90%">
-      </p>
-    </td>
-  </tr>
-</table>
+<div algin="center">
+<img src="figures/overview.svg" width="500"> <img src="figures/methods.svg" width="440">
+</div>
 
 ## 1. Oriented Variational Forward (OVF)
 
@@ -33,20 +22,9 @@ IRS provides the means to observe and regulate the data representations within a
 
 Our negative feedback training improves the accuracy of inference w/ noise and decreases the uncertainty (expected KL divergence).
 
-<table>
-  <tr>
-    <td>
-      <p align="center">
-        <img src="https://github.com/YifanQin-ND/NF_Training/files/13882469/2in1_results.pdf" alt="2in1_results" width="80%" height="80%">
-      </p>
-    </td>
-    <td>
-      <p align="center">
-        <img src="https://github.com/YifanQin-ND/NF_Training/files/13882481/EKL.pdf" alt="EKL" width="80%" height="80%">
-      </p>
-    </td>
-  </tr>
-</table>
+<div algin="center">
+<img src="figures/overview.svg" width="500"> <img src="figures/methods.svg" width="440">
+</div>
 
 # Usage
 We provide one example to illustrate the usage of the code.
