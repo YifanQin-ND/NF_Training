@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from irs_block import IRS_Block
+from .irs_block import IRS_Block
 from src.generate_noise import generate_noise
 
 sys.path.append('../')
@@ -227,8 +227,8 @@ class ResNet_test(nn.Module):
 
     def epoch_noise(self):
         for i in range(1, 9):
-            block = getattr(self, f'bb{i}')
-            block.epoch_noise()
+            layer = getattr(self, f'layer{i}')
+            layer.epoch_noise()
         self.conv1_noise = generate_noise(self.conv1.weight, self.noise_backbone)
         self.fc1_noise = generate_noise(self.fc1.weight, self.noise_backbone)
 
