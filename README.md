@@ -74,3 +74,6 @@ If you find NFT useful or relevant to your research, please kindly cite our pape
   year={2023}
 }
 ```
+
+# License
+This repository is released under the MIT license. See [LICENSE](docs/LICENSE) for additional details.
