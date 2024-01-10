@@ -22,21 +22,26 @@ IRS provides the means to observe and regulate the data representations within a
 
 Our negative feedback training improves the accuracy of inference w/ noise and decreases the uncertainty (expected KL divergence).
 
-<div algin="center">
-<img src="figures/overview.svg" width="500"> <img src="figures/methods.svg" width="440">
-</div>
+<p align="center">
+  <img src="figures/results.svg" alt="results" width="50%">
+</p>
+
+<p align="center">
+  <img src="figures/EKL.png" alt="EKL" width="40%">
+</p>
+
 
 # Usage
 We provide one example to illustrate the usage of the code.
-For the IRS instance, we run vgg8 with device relative variation 0.3. Training for 200 epochs and then conduct 200 times inference w/ noise Monte Carlo simulation (parameters can be modified in config).
+For the IRS instance, we run resent8 with device relative variation 0.3. Training for 200 epochs and then conduct 200 times inference w/ noise Monte Carlo simulation (parameters can be modified in config).
 ```
-python vgg8_main.py \
+python res18_main.py \
 --mode tnt \
 --type irs \
 --dataset mnist \
 --var1 0.3 \
 --var2 0.3 \
---beta 1e-2 \
+--beta 1e-1 \
 --num 1 \
 --mark 1.1
 ```
