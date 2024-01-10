@@ -36,7 +36,7 @@ def train_loop(
             if acc[-1] > best_acc:
                 best_acc = acc[-1]
                 log_file.write(f'acc1 is {acc[0]:.2f}%, acc2 is {acc[1]:.2f}%, acc3 is {acc[2]:.2f}%, '
-                               f'acc4 is {acc[3]:.2f}%, accb is {acc[3]:.2f}%, loss is {train_loss}\n')
+                               f'acc4 is {acc[3]:.2f}%, accb is {acc[4]:.2f}%, loss is {train_loss}\n')
                 torch.save(model.state_dict(), save_path)
 
         elif args.type == 'ovf':
