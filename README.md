@@ -76,4 +76,4 @@ If you find NFT useful or relevant to your research, please kindly cite our pape
 ```
 
 # License
-This repository is released under the MIT license. See [LICENSE](docs/LICENSE) for additional details.
+This repository is released under the MIT license. See [LICENSE](LICENSE) for additional details.
