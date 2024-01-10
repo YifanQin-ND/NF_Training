@@ -118,7 +118,7 @@ def train_part(
 
 
 def test_part(args, test_loader):
-    save_path = f'check_points/resnet18_{args.type}_{args.dataset}_{args.num}_{args.mark}.pth'
+    save_path = f'check_points/res18_{args.type}_{args.dataset}_{args.num}_{args.mark}.pth'
 
     save_log = f'./log/{args.dataset}'
     if not os.path.exists(save_log):
