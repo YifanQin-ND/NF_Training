@@ -6,7 +6,7 @@
 Compute-in-memory (CIM) accelerators built upon non-volatile memory (NVM) devices excel in energy efficiency and latency when performing Deep Neural Network (DNN) inference, thanks to their in-situ data processing capability. However, the stochastic nature and intrinsic variations of NVM devices often result in performance degradation in DNN inference. Introducing these non-ideal device behaviors during DNN training enhances robustness (**noise-injection training**), but has drawbacks. Here, we draw inspiration from the control theory and propose a novel training concept: **Negative Feedback Training (NFT)** leveraging the multi-scale noisy information captured from network. We develop two specific NFT instances, Oriented Variational Forward (OVF) and Intermediate Representation Snapshot (IRS).
 
 <div algin="center">
-<img src="figures/overview.svg" width="500"> <img src="figures/methods.svg" width="440">
+<img src="figures/overview.svg" width="400"> <img src="figures/methods.svg" width="360">
 </div>
 
 ## 1. Oriented Variational Forward (OVF)
