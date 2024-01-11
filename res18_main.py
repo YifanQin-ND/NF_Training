@@ -102,7 +102,7 @@ def train_part(
     log_file.write(f'save model at {save_path}\n')
     log_file.write(f'epoch={Config.EPOCH}, lr={Config.LR}, batch size={Config.BATCH_SIZE}.\n')
     log_file.write(f'weight bit={Config.WEIGHT_BIT}, device bit={Config.DEVICE_BIT}.\n')
-    log_file.write(f'noise var={args.var1}.\n')
+    log_file.write(f'backbone noise var={args.var1}, block noise var={args.var2}\n')
     log_file.write(f'dataset={args.dataset}, beta={args.beta}.\n')
     log_file.close()
 
