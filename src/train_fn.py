@@ -1,10 +1,11 @@
-from .loss_fn import negative_feedback
 from tqdm import tqdm
+
+from .loss_fn import negative_feedback
 
 
 def train_fn(model, device, train_loader, optimizer, criterion):
     model.train()
-    running_loss = 0
+    running_loss = 0.
 
     for batch_idx, (data, target) in enumerate(train_loader):
     # for batch_idx, (data, target) in tqdm(enumerate(train_loader), total=len(train_loader)):
@@ -16,7 +17,7 @@ def train_fn(model, device, train_loader, optimizer, criterion):
         loss.backward()
         optimizer.step()
 
-    epoch_loss = running_loss / len(train_loader.dataset)
+    epoch_loss = running_loss
     return epoch_loss
 
 
@@ -34,7 +35,7 @@ def train_fn_irs(args, model, device, train_loader, optimizer, criterion):
         loss.backward()
         optimizer.step()
 
-    epoch_loss = running_loss / len(train_loader.dataset)
+    epoch_loss = running_loss
     return epoch_loss
 
 
@@ -58,5 +59,5 @@ def train_fn_ovf(args, model, device, train_loader, optimizer, criterion):
         loss.backward()
         optimizer.step()
 
-    epoch_loss = running_loss / len(train_loader.dataset)
+    epoch_loss = running_loss
     return epoch_loss
