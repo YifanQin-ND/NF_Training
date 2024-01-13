@@ -38,7 +38,6 @@ class IRS_Block(nn.Module):
 
     def forward(self, x):
         identity = x
-        # adp_pool to size(adp, adp)
         out = self.avgpool(x)
         out = torch.flatten(out, 1)
         out = inf_with_noise(out, self.fc1.weight, self.noise_block, self.fc1.bias)
