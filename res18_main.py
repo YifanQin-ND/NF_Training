@@ -107,8 +107,13 @@ def train_part(
     log_file.close()
 
     criterion = nn.CrossEntropyLoss()
+
+    # adam for mnist, cifar10, cifar100
     # optimizer = torch.optim.Adam(net.parameters(), Config.LR)
+
+    # SGD for tiny imagenet
     optimizer = torch.optim.SGD(net.parameters(), Config.LR, momentum=0.9, weight_decay=5e-4)
+
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=Config.EPOCH)
 
     train_loop(args, net, Config.DEVICE, criterion, optimizer, scheduler, train_loader, test_loader, Config.EPOCH, save_path, log_path)
