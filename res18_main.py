@@ -109,10 +109,10 @@ def train_part(
     criterion = nn.CrossEntropyLoss()
 
     # adam for mnist, cifar10, cifar100
-    # optimizer = torch.optim.Adam(net.parameters(), Config.LR)
+    optimizer = torch.optim.Adam(net.parameters(), Config.LR)
 
     # SGD for tiny imagenet
-    optimizer = torch.optim.SGD(net.parameters(), Config.LR, momentum=0.9, weight_decay=5e-4)
+    # optimizer = torch.optim.SGD(net.parameters(), Config.LR, momentum=0.9, weight_decay=5e-4)
 
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=Config.EPOCH)
 
