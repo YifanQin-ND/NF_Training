@@ -15,16 +15,17 @@ def conv3x3(in_planes: int, out_planes: int, stride: int = 1, padding: int = 1) 
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=padding, bias=False)
 
 
-def inf_with_noise(data, weight, noise, stride, padding):
-    return F.conv2d(data, weight + generate_noise(weight, noise), stride=stride, padding=padding)
+def inf_with_noise(data, weight, noise, s_rate, stride, padding):
+    return F.conv2d(data, weight + generate_noise(weight, noise, s_rate), stride=stride, padding=padding)
 
 
 class VGG(nn.Module):
-    def __init__(self, in_channels, num_classes, noise_backbone):
+    def __init__(self, in_channels, num_classes, noise_backbone, s_backbone=1):
         super().__init__()
         self.in_channels = in_channels
         self.num_classes = num_classes
         self.noise_backbone = noise_backbone
+        self.s_backbone = s_backbone
 
         self.conv1 = conv3x3(self.in_channels, 64, stride=1, padding=1)
         self.conv2 = conv3x3(64, 128, stride=1, padding=1)
@@ -59,101 +60,103 @@ class VGG(nn.Module):
 
     def forward(self, x):
 
-        x = inf_with_noise(x, self.conv1.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv1.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn1(x)
         x = self.relu(x)
 
-        x = inf_with_noise(x, self.conv2.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv2.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn2(x)
         x = self.relu(x)
 
         x = self.pool(x)
 
-        x = inf_with_noise(x, self.conv3.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv3.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn3(x)
         x = self.relu(x)
 
-        x = inf_with_noise(x, self.conv4.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv4.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn4(x)
         x = self.relu(x)
 
         x = self.pool(x)
 
-        x = inf_with_noise(x, self.conv5.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv5.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn5(x)
         x = self.relu(x)
 
-        x = inf_with_noise(x, self.conv6.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv6.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn6(x)
         x = self.relu(x)
 
         x = self.pool(x)
 
         x = torch.flatten(x, 1)
-        x = F.linear(x, self.fc1.weight + generate_noise(self.fc1.weight, self.noise_backbone), self.fc1.bias)
+        x = F.linear(x, self.fc1.weight + generate_noise(self.fc1.weight, self.noise_backbone, self.s_backbone), self.fc1.bias)
         x = self.relu(x)
-        output = F.linear(x, self.fc2.weight + generate_noise(self.fc2.weight, self.noise_backbone), self.fc2.bias)
+        output = F.linear(x, self.fc2.weight + generate_noise(self.fc2.weight, self.noise_backbone, self.s_backbone), self.fc2.bias)
 
         return output
 
 
 class IRS_VGG(VGG):
-    def __init__(self, in_channels, num_classes, noise_backbone, noise_block):
-        super().__init__(in_channels, num_classes, noise_backbone)
+    def __init__(self, in_channels, num_classes, noise_backbone, noise_block, s_backbone, s_block=1):
+        super().__init__(in_channels, num_classes, noise_backbone, s_backbone)
         self.noise_block = noise_block
-        self.irs_block1 = IRS_Block(2304, 512, num_classes, 6, self.noise_block)
-        self.irs_block2 = IRS_Block(2048, 512, num_classes, 4, self.noise_block)
-        self.irs_block3 = IRS_Block(2304, 512, num_classes, 3, self.noise_block)
+        self.s_block = s_block
+        self.irs_block1 = IRS_Block(2304, 512, num_classes, 6, self.noise_block, self.s_block)
+        self.irs_block2 = IRS_Block(2048, 512, num_classes, 4, self.noise_block, self.s_block)
+        self.irs_block3 = IRS_Block(2304, 512, num_classes, 3, self.noise_block, self.s_block)
 
     def forward(self, x):
 
-        x = inf_with_noise(x, self.conv1.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv1.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn1(x)
         x = self.relu(x)
         x, out1 = self.irs_block1(x)
 
-        x = inf_with_noise(x, self.conv2.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv2.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn2(x)
         x = self.relu(x)
 
         x = self.pool(x)
         x, out2 = self.irs_block2(x)
 
-        x = inf_with_noise(x, self.conv3.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv3.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn3(x)
         x = self.relu(x)
 
-        x = inf_with_noise(x, self.conv4.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv4.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn4(x)
         x = self.relu(x)
 
         x = self.pool(x)
         x, out3 = self.irs_block3(x)
 
-        x = inf_with_noise(x, self.conv5.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv5.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn5(x)
         x = self.relu(x)
 
-        x = inf_with_noise(x, self.conv6.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv6.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn6(x)
         x = self.relu(x)
 
         x = self.pool(x)
 
         x = torch.flatten(x, 1)
-        x = F.linear(x, self.fc1.weight + generate_noise(self.fc1.weight, self.noise_backbone), self.fc1.bias)
+        x = F.linear(x, self.fc1.weight + generate_noise(self.fc1.weight, self.noise_backbone, self.s_backbone), self.fc1.bias)
         x = self.relu(x)
-        output = F.linear(x, self.fc2.weight + generate_noise(self.fc2.weight, self.noise_backbone), self.fc2.bias)
+        output = F.linear(x, self.fc2.weight + generate_noise(self.fc2.weight, self.noise_backbone, self.s_backbone), self.fc2.bias)
 
         return out1, out2, out3, output
 
 
 class VGG_TEST(nn.Module):
-    def __init__(self, in_channels, num_classes, noise_backbone):
+    def __init__(self, in_channels, num_classes, noise_backbone, s_backbone=1):
         super().__init__()
         self.in_channels = in_channels
         self.num_classes = num_classes
         self.noise_backbone = noise_backbone
+        self.s_backbone = s_backbone
         self.conv_noise = [None] * 6
         self.fc_noise = [None] * 2
 
@@ -179,9 +182,9 @@ class VGG_TEST(nn.Module):
     def epoch_noise(self):
         for i, module in enumerate([self.conv1, self.conv2, self.conv3,
                                     self.conv4, self.conv5, self.conv6]):
-            self.conv_noise[i] = generate_noise(module.weight, self.noise_backbone)
+            self.conv_noise[i] = generate_noise(module.weight, self.noise_backbone, self.s_backbone)
         for i, module in enumerate([self.fc1, self.fc2]):
-            self.fc_noise[i] = generate_noise(module.weight, self.noise_backbone)
+            self.fc_noise[i] = generate_noise(module.weight, self.noise_backbone, self.s_backbone)
 
     def forward(self, x):
 
@@ -223,13 +226,14 @@ class VGG_TEST(nn.Module):
         return output
 
 
-def vgg8(in_channels, num_classes, noise_backbone):
-    return VGG(in_channels, num_classes, noise_backbone)
+def vgg8(in_channels, num_classes, noise_backbone, s_backbone=1):
+    return VGG(in_channels, num_classes, noise_backbone, s_backbone)
 
 
-def vgg8_irs(in_channels, num_classes, noise_backbone, noise_block):
-    return IRS_VGG(in_channels, num_classes, noise_backbone, noise_block)
+def vgg8_irs(in_channels, num_classes, noise_backbone, noise_block, s_backbone=1, s_block=1):
+    return IRS_VGG(in_channels, num_classes, noise_backbone, noise_block, s_backbone, s_block)
 
 
-def vgg8_test(in_channels, num_classes, noise_backbone):
-    return VGG_TEST(in_channels, num_classes, noise_backbone)
+def vgg8_test(in_channels, num_classes, noise_backbone, s_backbone=1):
+    return VGG_TEST(in_channels, num_classes, noise_backbone, s_backbone)
+

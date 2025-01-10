@@ -21,20 +21,22 @@ def conv1x1(in_planes: int, out_planes: int, stride: int = 1, padding: int = 0) 
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, padding=padding, bias=False)
 
 
-def inf_with_noise(data, weight, noise, stride, padding):
-    return F.conv2d(data, weight + generate_noise(weight, noise), stride=stride, padding=padding)
+def inf_with_noise(data, weight, noise, s_rate, stride, padding):
+    return F.conv2d(data, weight + generate_noise(weight, noise, s_rate), stride=stride, padding=padding)
 
 
 class BasicBlock(nn.Module):
     def __init__(
             self,
-            noise_backbone,
             in_planes: int,
             out_planes: int,
+            noise_backbone,
+            s_backbone,
             stride: int = 1,
     ):
         super().__init__()
         self.noise_backbone = noise_backbone
+        self.s_backbone = s_backbone
         self.in_planes = in_planes
         self.out_planes = out_planes
         self.stride = stride
@@ -60,13 +62,13 @@ class BasicBlock(nn.Module):
 
     def forward(self, x):
         identity = x
-        out = inf_with_noise(x, self.conv1.weight, self.noise_backbone, stride=self.stride, padding=1)
+        out = inf_with_noise(x, self.conv1.weight, self.noise_backbone, self.s_backbone, self.stride, padding=1)
         out = self.bn1(out)
         out = self.relu(out)
-        out = inf_with_noise(out, self.conv2.weight, self.noise_backbone, stride=1, padding=1)
+        out = inf_with_noise(out, self.conv2.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         out = self.bn2(out)
         if self.in_planes != self.out_planes or self.stride != 1:
-            identity = self.bn3(inf_with_noise(x, self.unit_conv.weight, self.noise_backbone, stride=self.stride, padding=0))
+            identity = self.bn3(inf_with_noise(x, self.unit_conv.weight, self.noise_backbone, self.s_backbone, stride=self.stride, padding=0))
         out += identity
         out = self.relu(out)
         return out
@@ -79,10 +81,12 @@ class ResNet(nn.Module):
             num_classes,
             block: Type[BasicBlock],
             layers: List[int],
-            noise_backbone
+            noise_backbone,
+            s_backbone
     ):
         super().__init__()
         self.noise_backbone = noise_backbone  # noise var for backbone
+        self.s_backbone = s_backbone  # s rate for backbone
         self.conv1 = conv3x3(in_channels, 64, stride=1, padding=1)  # first conv layer
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU()
@@ -114,13 +118,13 @@ class ResNet(nn.Module):
             stride: int = 1
     ) -> nn.Sequential:
         layers = []
-        layers.append(block(self.noise_backbone, in_planes, out_planes, stride=stride))
+        layers.append(block(in_planes, out_planes, self.noise_backbone, self.s_backbone, stride=stride))
         for _ in range(1, blocks):
-            layers.append(block(self.noise_backbone, out_planes, out_planes, stride=1))
+            layers.append(block(out_planes, out_planes, self.noise_backbone, self.s_backbone, stride=1))
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x = inf_with_noise(x, self.conv1.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv1.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn1(x)
         x = self.relu(x)
 
@@ -131,22 +135,23 @@ class ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-        x = F.linear(x, self.fc1.weight + generate_noise(self.fc1.weight, self.noise_backbone), self.fc1.bias)
+        x = F.linear(x, self.fc1.weight + generate_noise(self.fc1.weight, self.noise_backbone, self.s_backbone), self.fc1.bias)
 
         return x
 
 
 class IRS_ResNet(ResNet):
-    def __init__(self, in_channels, num_classes, block: Type[BasicBlock], layers: List[int], noise_backbone, noise_block):
-        super().__init__(in_channels, num_classes, block, layers, noise_backbone)
+    def __init__(self, in_channels, num_classes, block: Type[BasicBlock], layers: List[int], noise_backbone, noise_block, s_backbone, s_block):
+        super().__init__(in_channels, num_classes, block, layers, noise_backbone, s_backbone)
         self.noise_block = noise_block  # noise var for IRS block
-        self.irs_block1 = IRS_Block(2304, 512, num_classes, 6, self.noise_block)
-        self.irs_block2 = IRS_Block(2304, 512, num_classes, 6, self.noise_block)
-        self.irs_block3 = IRS_Block(2048, 512, num_classes, 4, self.noise_block)
-        self.irs_block4 = IRS_Block(2304, 512, num_classes, 3, self.noise_block)
+        self.s_block = s_block  # s rate for IRS block
+        self.irs_block1 = IRS_Block(2304, 512, num_classes, 6, self.noise_block, self.s_block)
+        self.irs_block2 = IRS_Block(2304, 512, num_classes, 6, self.noise_block, self.s_block)
+        self.irs_block3 = IRS_Block(2048, 512, num_classes, 4, self.noise_block, self.s_block)
+        self.irs_block4 = IRS_Block(2304, 512, num_classes, 3, self.noise_block, self.s_block)
 
     def forward(self, x):
-        x = inf_with_noise(x, self.conv1.weight, self.noise_backbone, stride=1, padding=1)
+        x = inf_with_noise(x, self.conv1.weight, self.noise_backbone, self.s_backbone, stride=1, padding=1)
         x = self.bn1(x)
         x = self.relu(x)
 
@@ -161,7 +166,7 @@ class IRS_ResNet(ResNet):
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-        x = F.linear(x, self.fc1.weight + generate_noise(self.fc1.weight, self.noise_backbone), self.fc1.bias)
+        x = F.linear(x, self.fc1.weight + generate_noise(self.fc1.weight, self.noise_backbone, self.s_backbone), self.fc1.bias)
 
         return out1, out2, out3, out4, x
 
@@ -169,15 +174,17 @@ class IRS_ResNet(ResNet):
 class BasicBlock_test(nn.Module):
     def __init__(
             self,
-            noise_backbone,
             in_planes: int,
             out_planes: int,
+            noise_backbone,
+            s_backbone,
             stride: int = 1,
     ):
         super().__init__()
         self.conv_noise = [None] * 2
         self.unit_conv_noise = [None]
         self.noise_backbone = noise_backbone
+        self.s_backbone = s_backbone
         self.in_planes = in_planes
         self.out_planes = out_planes
         self.stride = stride
@@ -192,8 +199,8 @@ class BasicBlock_test(nn.Module):
 
     def epoch_noise(self):
         for i, module in enumerate([self.conv1, self.conv2]):
-            self.conv_noise[i] = generate_noise(module.weight, self.noise_backbone)
-        self.unit_conv_noise = generate_noise(self.unit_conv.weight, self.noise_backbone)
+            self.conv_noise[i] = generate_noise(module.weight, self.noise_backbone, self.s_backbone)
+        self.unit_conv_noise = generate_noise(self.unit_conv.weight, self.noise_backbone, self.s_backbone)
 
     def forward(self, x):
         identity = x
@@ -210,11 +217,12 @@ class BasicBlock_test(nn.Module):
 
 
 class ResNet_test(nn.Module):
-    def __init__(self, in_channels, num_classes, block: Type[BasicBlock_test], layers: List[int], noise_backbone):
+    def __init__(self, in_channels, num_classes, block: Type[BasicBlock_test], layers: List[int], noise_backbone, s_backbone):
         super().__init__()
         self.conv1_noise = None
         self.fc1_noise = None
         self.noise_backbone = noise_backbone
+        self.s_backbone = s_backbone
         self.conv1 = conv3x3(in_channels, 64, stride=1, padding=1)  # first conv layer
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU()
@@ -230,8 +238,8 @@ class ResNet_test(nn.Module):
             layer = getattr(self, f'layer{i}')
             for block in layer:
                 block.epoch_noise()
-        self.conv1_noise = generate_noise(self.conv1.weight, self.noise_backbone)
-        self.fc1_noise = generate_noise(self.fc1.weight, self.noise_backbone)
+        self.conv1_noise = generate_noise(self.conv1.weight, self.noise_backbone, self.s_backbone)
+        self.fc1_noise = generate_noise(self.fc1.weight, self.noise_backbone, self.s_backbone)
 
     def _make_layer(
             self,
@@ -242,9 +250,9 @@ class ResNet_test(nn.Module):
             stride: int = 1
     ) -> nn.Sequential:
         layers = []
-        layers.append(block(self.noise_backbone, in_planes, out_planes, stride=stride))
+        layers.append(block(in_planes, out_planes, self.noise_backbone, self.s_backbone, stride=stride))
         for _ in range(1, blocks):
-            layers.append(block(self.noise_backbone, out_planes, out_planes, stride=1))
+            layers.append(block(out_planes, out_planes, self.noise_backbone, self.s_backbone, stride=1))
 
         return nn.Sequential(*layers)
 
@@ -264,13 +272,15 @@ class ResNet_test(nn.Module):
         return x
 
 
-def resnet18(in_channels, num_classes, noise_backbone):
-    return ResNet(in_channels, num_classes, BasicBlock, [2, 2, 2, 2], noise_backbone)
+def resnet18(in_channels, num_classes, noise_backbone, s_backbone):
+    return ResNet(in_channels, num_classes, BasicBlock, [2, 2, 2, 2], noise_backbone, s_backbone)
 
 
-def resnet18_irs(in_channels, num_classes, noise_backbone, noise_block):
-    return IRS_ResNet(in_channels, num_classes, BasicBlock, [2, 2, 2, 2], noise_backbone, noise_block)
+def resnet18_irs(in_channels, num_classes, noise_backbone, noise_block, s_backbone, s_block):
+    return IRS_ResNet(in_channels, num_classes, BasicBlock, [2, 2, 2, 2], noise_backbone, noise_block, s_backbone, s_block)
 
 
-def resnet18_test(in_channels, num_classes, noise_backbone):
-    return ResNet_test(in_channels, num_classes, BasicBlock_test, [2, 2, 2, 2], noise_backbone)
+def resnet18_test(in_channels, num_classes, noise_backbone, s_backbone):
+    return ResNet_test(in_channels, num_classes, BasicBlock_test, [2, 2, 2, 2], noise_backbone, s_backbone)
+
+

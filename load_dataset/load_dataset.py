@@ -69,8 +69,8 @@ def fetch_dataloader(types, train=True):
     else:
         raise ValueError(f'Invalid dataset name: {types}')
 
-    train_loader = data.DataLoader(train_set, Config.BATCH_SIZE, shuffle=True, num_workers=1)
-    dev_loader = data.DataLoader(dev_set, Config.BATCH_SIZE, shuffle=False, num_workers=1)
+    train_loader = data.DataLoader(train_set, Config.BATCH_SIZE, shuffle=True, num_workers=8, pin_memory=True)
+    dev_loader = data.DataLoader(dev_set, Config.BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
 
     if train:
         return train_loader

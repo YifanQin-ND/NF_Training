@@ -1,23 +1,21 @@
 import sys
-
 import torch
-
+import numpy as np
 from config import Config
 
 sys.path.append('../')
 
 
-def generate_noise(weight, variation):
-    """
-    Adds noise to a given weight tensor.
-    Args:
-        weight (torch.Tensor): The weight tensor to which noise will be added.
-        variation (float): The degree of variation (noise) to be added.
-    """
+# noise for weight
+
+def generate_noise(weight, variation, s_rate=1):
     if variation == 0:
-        return torch.zeros_like(weight).to(Config.DEVICE)  # No noise if variation is 0
+        return torch.zeros_like(weight).to(Config.DEVICE)
     else:
-        scale = weight.abs().max().item()  # Maximum absolute value of the weight tensor
+        variation = variation / np.sqrt((s_rate**2 * 0.4 + 0.6))
+        var_list = [1, s_rate, s_rate, 1]
+        scale = weight.abs().max().item()
+        mask = ((0.25 < (weight.abs() / scale)) * ((weight.abs() / scale) < 0.75)).float()
         var1 = 0
         var2 = 0
         for i in range(Config.WEIGHT_BIT // Config.DEVICE_BIT):
@@ -28,5 +26,7 @@ def generate_noise(weight, variation):
             var2 += j
         # Calculate the standard deviation of the noise based on variation and scale
         var = ((pow(var1, 1 / 2) * scale) / var2) * variation
-        # Generate noise from a normal distribution and add to the weight tensor
-        return torch.normal(mean=0., std=var, size=weight.size()).to(Config.DEVICE)
+        w_noise = torch.normal(mean=0., std=var, size=weight.size()).to(Config.DEVICE)
+        return w_noise * mask * var_list[1] + w_noise * (1 - mask) * var_list[0]
+
+
