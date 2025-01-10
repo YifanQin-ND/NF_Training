@@ -5,7 +5,7 @@ import torch
 
 @dataclass
 class Config:
-    DATA_PATH: str = '/home/ywang144/scratch/yifan/dataset'
+    DATA_PATH: str = '/home/dataset'
     BATCH_SIZE: int = 128
     DEVICE: str = 'cuda' if torch.cuda.is_available() else 'cpu'
     # DEVICE: str = 'mps'
