@@ -1,4 +1,6 @@
 # NeFT: Negative Feedback Training to Improve Robustness of Compute-In-Memory DNN Accelerators
+Yifan Qin, Zheyu Yan, Wujie Wen, Xiaobo Sharon Hu, Yiyu Shi
+
 [[Arxiv](https://arxiv.org/abs/2305.14561)] [![LICENSE](https://img.shields.io/github/license/JoeyBling/hexo-theme-yilia-plus "LICENSE")](./LICENSE "LICENSE") 
 
 Code for paper "Negative Feedback Training: A Novel Concept to Improve Robustness of NVCiM DNN Accelerators".
@@ -59,8 +61,8 @@ MC_times    # Monte Carlo simulation times
 This repo is quite friendly for those who are familar with PyTorch.
 
 ## Writting your own method
-Please refer to /models to syntax of writting your own models.
-Please refer to /config.py to syntax of writting your own config.
+- Please refer to /models to syntax of writting your own models.
+- Please refer to /config.py to syntax of writting your own config.
 
 # License
 This repository is released under the MIT license. See [LICENSE](LICENSE) for additional details.
