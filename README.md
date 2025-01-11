@@ -28,7 +28,7 @@ Our negative feedback training improves the accuracy of inference w/ noise and d
 - Python >=3.6   
 - Pytorch
 - torchvision
-- Others see [requirements.txt](requirements.txt)
+- Others see environment.yml
 
 # Usage
 The main code is in 'vgg_main.py' and 'res18_main.py'.
