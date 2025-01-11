@@ -31,7 +31,7 @@ Our negative feedback training improves the accuracy of inference w/ noise and d
 - Others see environment.yml
 
 # Usage
-The main code is in 'vgg_main.py' and 'res18_main.py'.
+The main code is in 'vgg8_main.py' and 'res18_main.py'.
 ## Training and Monte Carlo simulation with noise
 ```shell
 python res18_main.py --mode tnt --type irs --dataset cifar10 --var1 0.1 --var2 0.1 --device RRAM1 --num $SLURM_ARRAY_TASK_ID --mark 1.1
