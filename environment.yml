@@ -1,0 +1,14 @@
+name: nf
+channels:
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
+dependencies:
+  - python=3.10
+  - pytorch
+  - pytorch-cuda
+  - torchaudio
+  - torchvision
+  - tqdm
+  - scipy
+prefix: /home/miniconda3/envs/nf
+
