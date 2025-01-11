@@ -1,22 +1,14 @@
-# Negative Feedback Training: A Novel Concept to Improve Robustness of NVCIM DNN Accelerators
-[[Arxiv](https://arxiv.org/abs/2305.14561)] [[Notre Dame SCL Lab](https://www3.nd.edu/~scl/)] [![LICENSE](https://img.shields.io/github/license/JoeyBling/hexo-theme-yilia-plus "LICENSE")](./LICENSE "LICENSE") 
+# NeFT: Negative Feedback Training to Improve Robustness of Compute-In-Memory DNN Accelerators
+[[Arxiv](https://arxiv.org/abs/2305.14561)] [![LICENSE](https://img.shields.io/github/license/JoeyBling/hexo-theme-yilia-plus "LICENSE")](./LICENSE "LICENSE") 
 
+Code for paper "Negative Feedback Training: A Novel Concept to Improve Robustness of NVCiM DNN Accelerators".
 
 # Overview
-Compute-in-memory (CIM) accelerators built upon non-volatile memory (NVM) devices excel in energy efficiency and latency when performing Deep Neural Network (DNN) inference, thanks to their in-situ data processing capability. However, the stochastic nature and intrinsic variations of NVM devices often result in performance degradation in DNN inference. Introducing these non-ideal device behaviors during DNN training enhances robustness (**noise-injection training**), but has drawbacks. Here, we draw inspiration from the control theory and propose a novel training concept: **Negative Feedback Training (NFT)** leveraging the multi-scale noisy information captured from network. We develop two specific NFT instances, Oriented Variational Forward (OVF) and Intermediate Representation Snapshot (IRS).
+Compute-in-memory accelerators built upon non-volatile memory devices excel in energy efficiency and latency when performing deep neural network (DNN) inference, thanks to their in-situ data processing capability. However, the stochastic nature and intrinsic variations of non-volatile memory devices often result in performance degradation during DNN inference. Introducing these non-ideal device behaviors in DNN training enhances robustness, but drawbacks include limited accuracy improvement, reduced prediction confidence, and convergence issues. This arises from a mismatch between the deterministic training and non-deterministic device variations, as such training, though considering variations, relies solely on the model's final output. In this work, inspired by control theory, we propose Negative Feedback Training (NeFT)—a novel concept supported by theoretical analysis—to more effectively capture multi-scale noisy information throughout the network. We instantiate this concept with two specific methods, oriented variational forward (OVF) and intermediate representation snapshot (IRS). Extensive experiments show that our methods outperform existing state-of-the-art methods with up to a 46.71\% improvement in inference accuracy while reducing epistemic uncertainty, boosting output confidence, and improving convergence probability. These results underline the generality and practicality of our NeFT framework for boosting DNN robustness against device variations.
 
 <div algin="center">
 <img src="figures/overview.svg" width="400"> <img src="figures/methods.svg" width="360">
 </div>
-
-## 1. Oriented Variational Forward (OVF)
-
-OVF generates feedback using the less presentative outputs from oriented variational forwards, which are forward processes with device variations larger than inference variations. Using them as negative feedback, OVF inhibits the backbone’s deviation from the optimal optimization direction.
-
-## 2. Intermediate Representation Snapshot (IRS)
-
-IRS provides the means to observe and regulate the data representations within a neural network during training. In this way, internal perturbations can be reflected in the objective and mitigated through negative feedback.
-
 
 # Robustness Improvements
 
@@ -30,33 +22,45 @@ Our negative feedback training improves the accuracy of inference w/ noise and d
   <img src="figures/EKL.png" alt="EKL" width="40%">
 </p>
 
+# Requirements
+- Python >=3.6   
+- Pytorch
+- torchvision
+- Others see [requirements.txt](requirements.txt)
 
 # Usage
-We provide one example to illustrate the usage of the code.
-For the IRS instance, we run resent8 with device relative variation 0.3. Training for 200 epochs and then conduct 200 times inference w/ noise Monte Carlo simulation (parameters can be modified in config).
+The main code is in 'vgg_main.py' and 'res18_main.py'.
+## Training and Monte Carlo simulation with noise
+```shell
+python res18_main.py --mode tnt --type irs --dataset cifar10 --var1 0.1 --var2 0.1 --device RRAM1 --num $SLURM_ARRAY_TASK_ID --mark 1.1
 ```
-python res18_main.py \
---mode tnt \
---type irs \
---dataset mnist \
---var1 0.3 \
---var2 0.3 \
---beta 1e-1 \
---num 1 \
---mark 1.1
-```
---num and --mark are artificial labelings, with no practical significance for experiments. For more details of args, check the codes.
 
-# Reference
-If you find NFT useful or relevant to your research, please kindly cite our paper:
+## Arguments:
+```shell
+--mode      # train / test / tnt: train mode or Monte Carlo test mode or train + Monte Carlo test mode
+--type      # base / correct / irs / ovf: base noise-injection training method or correct net method (see paper https://arxiv.org/pdf/2211.14917) or IRS method or OVF method
+--dataset   # dataset name
+--var1      # device variation for backbone
+--var2      # device variation for blocks of IRS method
+--device    # RRAM1 / RRAM4 / FeFET2 / FeFET6: device type for different noise models in different NVM devices
+--num       # sub-label for array task
+--mark      # label for job
 ```
-@article{qin2023negative,
-  title={Negative Feedback Training: A Novel Concept to Improve Robustness of NVCiM DNN Accelerators},
-  author={Qin, Yifan and Yan, Zheyu and Wen, Wujie and Hu, Xiaobo Sharon and Shi, Yiyu},
-  journal={arXiv preprint arXiv:2305.14561},
-  year={2023}
-}
+
+## Configurations in config.py
+```shell
+DATA_PATH   # path to dataset
+WEIGHT_BIT  # weight bit-width
+DEVICE_BIT  # device bit-width
+MC_times    # Monte Carlo simulation times
 ```
+
+## Extending this repo
+This repo is quite friendly for those who are familar with PyTorch.
+
+## Writting your own method
+Please refer to /models to syntax of writting your own models.
+Please refer to /config.py to syntax of writting your own config.
 
 # License
 This repository is released under the MIT license. See [LICENSE](LICENSE) for additional details.
