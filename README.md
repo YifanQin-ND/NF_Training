@@ -40,7 +40,7 @@ python res18_main.py --mode tnt --type irs --dataset cifar10 --var1 0.1 --var2 0
 ## Arguments:
 ```shell
 --mode      # train / test / tnt: train mode or Monte Carlo test mode or train + Monte Carlo test mode
---type      # base / correct / irs / ovf: base noise-injection training method or correct net method (see paper https://arxiv.org/pdf/2211.14917) or IRS method or OVF method
+--type      # base / irs / ovf: noise-injection training method or IRS method or OVF method
 --dataset   # dataset name
 --var1      # device variation for backbone
 --var2      # device variation for blocks of IRS method
