@@ -10,7 +10,7 @@ from config import Config, s_factor, vgg8_beta
 from load_dataset.load_dataset import fetch_dataloader
 from models.vgg8 import vgg8, vgg8_irs, vgg8_test
 from src.test_fn import test_fn, test_fn_irs
-from src.train_fn import train_fn, train_fn_irs, train_fn_ovf, train_fn_correct
+from src.train_fn import train_fn, train_fn_irs, train_fn_ovf
 
 
 def train_loop(
@@ -41,15 +41,6 @@ def train_loop(
 
         elif args.type == 'ovf':
             train_loss = train_fn_ovf(args, model, device, train_loader, optimizer, criterion, vgg8_beta[args.type][args.dataset])
-            acc = test_fn(model, device, test_loader)
-            print(f'acc is {acc:.2f}%, loss is {train_loss}')
-            if acc > best_acc:
-                best_acc = acc
-                best_ep = epoch + 1
-                torch.save(model.state_dict(), save_path)
-
-        elif args.type == 'correct':
-            train_loss = train_fn_correct(model, device, train_loader, optimizer, criterion)
             acc = test_fn(model, device, test_loader)
             print(f'acc is {acc:.2f}%, loss is {train_loss}')
             if acc > best_acc:
@@ -94,7 +85,7 @@ def train_part(
         in_channel = 3
         num_classes = 10
 
-    if args.type == 'base' or args.type == 'correct':
+    if args.type == 'base':
         net = vgg8(in_channel, num_classes, args.var1, s_factor[args.device]).to(Config.DEVICE)
     elif args.type == 'irs':
         net = vgg8_irs(in_channel, num_classes, args.var1, args.var2, s_factor[args.device], s_factor['RRAM1']).to(Config.DEVICE)
@@ -175,7 +166,7 @@ if __name__ == '__main__':
                         help="train / test / tnt")
     parser.add_argument('--type',
                         type=str,
-                        help="base / irs / ovf / correct")
+                        help="base / irs / ovf")
     parser.add_argument('--dataset',
                         type=str,
                         help="mnist / cifar10")

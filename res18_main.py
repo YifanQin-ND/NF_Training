@@ -10,7 +10,7 @@ from config import Config, s_factor, res18_beta
 from load_dataset.load_dataset import fetch_dataloader
 from models.resnet18 import resnet18, resnet18_irs, resnet18_test
 from src.test_fn import test_fn, test_fn_irs
-from src.train_fn import train_fn, train_fn_irs, train_fn_ovf, train_fn_correct
+from src.train_fn import train_fn, train_fn_irs, train_fn_ovf
 
 
 def train_loop(
@@ -43,15 +43,6 @@ def train_loop(
 
         elif args.type == 'ovf':
             train_loss = train_fn_ovf(args, model, device, train_loader, optimizer, criterion, res18_beta[args.type][args.dataset])
-            acc = test_fn(model, device, test_loader)
-            print(f'acc is {acc:.2f}%, loss is {train_loss}')
-            if acc > best_acc:
-                best_acc = acc
-                best_ep = epoch + 1
-                torch.save(model.state_dict(), save_path)
-
-        elif args.type == 'correct':
-            train_loss = train_fn_correct(model, device, train_loader, optimizer, criterion)
             acc = test_fn(model, device, test_loader)
             print(f'acc is {acc:.2f}%, loss is {train_loss}')
             if acc > best_acc:
@@ -102,7 +93,7 @@ def train_part(
         in_channel = 3
         num_classes = 200
 
-    if args.type == 'base' or args.type == 'correct':
+    if args.type == 'base':
         net = resnet18(in_channel, num_classes, args.var1, s_factor[args.device]).to(Config.DEVICE)
     elif args.type == 'irs':
         net = resnet18_irs(in_channel, num_classes, args.var1, args.var2, s_factor[args.device], s_factor['RRAM1']).to(Config.DEVICE)
@@ -186,7 +177,7 @@ if __name__ == '__main__':
                         help="train / test / tnt")
     parser.add_argument('--type',
                         type=str,
-                        help="base / irs / ovf / correct")
+                        help="base / irs / ovf")
     parser.add_argument('--dataset',
                         type=str,
                         help="mnist / cifar10 / cifar100 / tiny")
@@ -212,7 +203,7 @@ if __name__ == '__main__':
         days = int(seconds // 86400)  # 1 天 = 86400 秒
         hours = int((seconds % 86400) // 3600)  # 1 小时 = 3600 秒
         minutes = int((seconds % 3600) // 60)  # 1 分钟 = 60 秒
-        seconds = seconds % 60  # 剩余的秒数
+        seconds = seconds % 60
         return f"{days}d {hours}h {minutes}m {seconds:.2f}s"
 
     start_time = time.time()
