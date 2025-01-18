@@ -190,10 +190,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     def format_time(seconds):
-        days = int(seconds // 86400)  # 1 天 = 86400 秒
-        hours = int((seconds % 86400) // 3600)  # 1 小时 = 3600 秒
-        minutes = int((seconds % 3600) // 60)  # 1 分钟 = 60 秒
-        seconds = seconds % 60  # 剩余的秒数
+        days = int(seconds // 86400)  # 1 day = 86400 s
+        hours = int((seconds % 86400) // 3600)  # 1 h = 3600 s
+        minutes = int((seconds % 3600) // 60)  # 1 min = 60 s
+        seconds = seconds % 60
         return f"{days}d {hours}h {minutes}m {seconds:.2f}s"
 
     start_time = time.time()
