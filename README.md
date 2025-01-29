@@ -1,12 +1,15 @@
-# NeFT: Negative Feedback Training to Improve Robustness of Compute-In-Memory DNN Accelerators
-Yifan Qin, Zheyu Yan, Wujie Wen, Xiaobo Sharon Hu, Yiyu Shi
+# **NeFT**: **Ne**gative **F**eedback **T**raining to Improve Robustness of Compute-In-Memory DNN Accelerators
+Yifan Qin, Zheyu Yan, Dailin Gan, Jun Xia, Zixuan Pan, Wujie Wen, Xiaobo Sharon Hu, Yiyu Shi
 
 [[Arxiv](https://arxiv.org/abs/2305.14561)] [![LICENSE](https://img.shields.io/github/license/JoeyBling/hexo-theme-yilia-plus "LICENSE")](./LICENSE "LICENSE") 
 
-Code for paper "Negative Feedback Training: A Novel Concept to Improve Robustness of NVCiM DNN Accelerators".
+Code for paper "**NeFT**: **Ne**gative **F**eedback **T**raining to Improve Robustness of Compute-In-Memory DNN Accelerators".
 
 # Overview
-Compute-in-memory accelerators built upon non-volatile memory devices excel in energy efficiency and latency when performing deep neural network (DNN) inference, thanks to their in-situ data processing capability. However, the stochastic nature and intrinsic variations of non-volatile memory devices often result in performance degradation during DNN inference. Introducing these non-ideal device behaviors in DNN training enhances robustness, but drawbacks include limited accuracy improvement, reduced prediction confidence, and convergence issues. This arises from a mismatch between the deterministic training and non-deterministic device variations, as such training, though considering variations, relies solely on the model's final output. In this work, inspired by control theory, we propose Negative Feedback Training (NeFT)—a novel concept supported by theoretical analysis—to more effectively capture multi-scale noisy information throughout the network. We instantiate this concept with two specific methods, oriented variational forward (OVF) and intermediate representation snapshot (IRS). Extensive experiments show that our methods outperform existing state-of-the-art methods with up to a 46.71\% improvement in inference accuracy while reducing epistemic uncertainty, boosting output confidence, and improving convergence probability. These results underline the generality and practicality of our NeFT framework for boosting DNN robustness against device variations.
+Compute-in-memory accelerators built upon non-volatile memory devices excel in energy efficiency and latency when performing deep neural network (DNN) inference, thanks to their in-situ data processing capability. 
+However, the stochastic nature and intrinsic variations of non-volatile memory devices often result in performance degradation during DNN inference.
+Introducing these non-ideal device behaviors in DNN training enhances robustness, but drawbacks include limited accuracy improvement, reduced prediction confidence, and convergence issues. This arises from a mismatch between the deterministic training and non-deterministic device variations, as such training, though considering variations, relies solely on the model's final output.
+In this work, inspired by control theory, we propose Negative Feedback Training (NeFT)—a novel concept supported by theoretical analysis—to more effectively capture multi-scale noisy information throughout the network. We instantiate this concept with two specific methods, oriented variational forward (OVF) and intermediate representation snapshot (IRS). Extensive experiments show that our methods outperform existing state-of-the-art methods with up to a 45.08% improvement in inference accuracy while reducing epistemic uncertainty, boosting output confidence, and improving convergence probability. These results underline the generality and practicality of our NeFT framework for boosting DNN robustness against device variations.
 
 <div align="center">
 <img src="figures/method.svg" width="50%">
