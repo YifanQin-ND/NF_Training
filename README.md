@@ -12,11 +12,11 @@ Introducing these non-ideal device behaviors in DNN training enhances robustness
 In this work, inspired by control theory, we propose Negative Feedback Training (NeFT)—a novel concept supported by theoretical analysis—to more effectively capture multi-scale noisy information throughout the network. We instantiate this concept with two specific methods, oriented variational forward (OVF) and intermediate representation snapshot (IRS). Extensive experiments show that our methods outperform existing state-of-the-art methods with up to a 45.08% improvement in inference accuracy while reducing epistemic uncertainty, boosting output confidence, and improving convergence probability. These results underline the generality and practicality of our NeFT framework for boosting DNN robustness against device variations.
 
 <div align="center">
-<img src="figures/method.svg" width="50%">
+<img src="figures/method.png" width="50%">
 </div>
 
 <div align="center">
-<img src="figures/two_instances.svg" width="50%">
+<img src="figures/two_instances.png" width="50%">
 </div>
 
 # Robustness Improvements
